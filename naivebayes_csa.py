@@ -16,10 +16,10 @@ from weka.classifiers import Classifier,PredictionOutput,Evaluation
 
 # <helper functions>
 
-def get_train_data(arff_file,class_index=None):
+def get_train_data(arff_file,iterative= True,class_index=None):
 
 	loader = Loader('weka.core.converters.ArffLoader')
-	train_data = loader.load_file(arff_file)
+	train_data = loader.load_file(arff_file,incremental = iterative)
 
 	# set the attribute which is the class to be predicted 
 	if class_index is None:	
@@ -27,7 +27,7 @@ def get_train_data(arff_file,class_index=None):
 	else:
 		train_data.class_index = class_index
 	
-	return train_data 
+	return (loader , train_data ) 
 	
 # </helper functions>
 
@@ -57,7 +57,10 @@ if __name__ == '__main__':
 		print 'jvm exception : {0} '.format(excep)
 
 	# <test>
-	print get_data(training_file)
+	loader , train_data = get_train_data(training_file)
+	print train_data 	
+	for instance in loader:
+		print instance
         
 	# </test> 
         
