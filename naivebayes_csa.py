@@ -16,7 +16,7 @@ from weka.classifiers import Classifier,PredictionOutput,Evaluation
 
 # <helper functions>
 
-def get_data(arff_file,class_index=None):
+def get_train_data(arff_file,class_index=None):
 
 	loader = Loader('weka.core.converters.ArffLoader')
 	train_data = loader.load_file(arff_file)
