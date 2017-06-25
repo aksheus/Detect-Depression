@@ -27,8 +27,33 @@ def get_train_data(arff_file,iterative= True,class_index=None):
 	else:
 		train_data.class_index = class_index
 	
-	return (loader , train_data ) 
+	return ( train_data , loader )
+
+
+def get_number_of_instances( instances ):
+	count = 0
+	for inst in instances:
+		count+=1
+	return count
 	
+
+def  get_classifier ( header , instances , classifier_name = 'weka.classifiers.bayes.NaiveBayesUpdateable' , percentage = 100 ):
+
+	count = get_number_of_instances(instances)
+	stop = (count*percentage)//100
+	start = 0
+
+	classifier = Classifier(classname = classifier_name)
+	classifier.build_classifier(header)
+	
+	for inst in instances:
+		if start <= stop:
+			classifier.update_classifier(inst)
+		else:
+			break
+	return classifier 
+        
+	 
 # </helper functions>
 
 
@@ -57,11 +82,9 @@ if __name__ == '__main__':
 		print 'jvm exception : {0} '.format(excep)
 
 	# <test>
-	loader , train_data = get_train_data(training_file)
-	print train_data 	
-	for instance in loader:
-		print instance
-        
+	train_header , train_instances  = get_train_data(training_file)
+	classifier = get_classifier(train_header , train_instances )
+        print classifier 
 	# </test> 
         
 # </main>
