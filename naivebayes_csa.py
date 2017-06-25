@@ -14,17 +14,53 @@ from weka.classifiers import Classifier,PredictionOutput,Evaluation
 
 # </imports>
 
+# <helper functions>
+
+def get_data(arff_file,class_index=None):
+
+	loader = Loader('weka.core.converters.ArffLoader')
+	train_data = loader.load_file(arff_file)
+
+	# set the attribute which is the class to be predicted 
+	if class_index is None:	
+		train_data.class_is_last() 
+	else:
+		train_data.class_index = class_index
+	
+	return train_data 
+	
+# </helper functions>
+
+
 # <main>
 if __name__ == '__main__':
 
 	if os.path.isfile(sys.argv[1]):
+
 		training_file = sys.argv[1]
 	else:
 		print 'training file does not exist'
+		exit(1)
 
 	if os.path.isfile(sys.argv[2]):
+
 		testing_file = sys.argv[2]
 	else:
 		print 'testing file does not exist'
+		exit(2)
 
+	try:
+		jvm.start()
+
+	except Exception as excep:
+
+		print 'jvm exception : {0} '.format(excep)
+
+	# <test>
+	print get_data(training_file)
+        
+	# </test> 
+        
 # </main>
+
+
