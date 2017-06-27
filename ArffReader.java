@@ -12,7 +12,7 @@ public class ArffReader {
 
 	private String PathToTest;
 
-	public ArffLoader Loader;
+	private ArffLoader Loader;
 
 
 	public ArffReader (String trainPath , String testPath){
@@ -48,6 +48,11 @@ public class ArffReader {
 
 		return Data;
 
+	}
+
+	public ArffLoader GetLoader(){
+
+		return Loader;
 	}
 
 		

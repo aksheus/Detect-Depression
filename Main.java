@@ -32,19 +32,23 @@ public class Main{
 
 					Reader = new ArffReader(args[0],args[1]);
 
-					Instances TrainingData = Reader.GetTrainingData();
+					ClassifierBuilder Builder =  new ClassifierBuilder(
+						                             Reader.GetTrainingData(),
+						                             Reader.GetLoader()
+						                             );
+					Builder.TrainClassifier(100);
 
-					System.out.println(TrainingData);
+					Builder.PrintClassifier();
 
-					Instance Current;
-
-					while((Current = Reader.Loader.getNextInstance(TrainingData)) != null){
-						System.out.println(Current);
-					}
+					
                 }
                 catch(IOException ioe){
 
                         System.out.println(ioe.getStackTrace());
+                }
+                catch(Exception e){
+
+                	System.out.println(e.getStackTrace());
                 }
 			}
 			else {
