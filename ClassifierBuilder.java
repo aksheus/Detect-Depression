@@ -12,6 +12,8 @@ public class ClassifierBuilder{
 
 	private Instances TrainingData;
 
+	//private Instances TestData;
+
 	private ArffLoader DataLoader;
 
 
@@ -43,28 +45,20 @@ public class ClassifierBuilder{
 
 		NbClassifier.buildClassifier(TrainingData);
 
-		int Stop = (int) 
-		Math.floor((GetNumberOfInstances()*percentage)/100);
+		int Stop = (int) Math.floor((GetNumberOfInstances()*percentage)/100);
+
+	//	System.out.println("Stop : "+Stop);
 
 		int Start = 0;
 
 		Instance Current;
 
-		while((Current = DataLoader.getNextInstance(TrainingData)) != null){
-
-			if(Start <= Stop){
+		while(((Current = DataLoader.getNextInstance(TrainingData)) != null) && (Start<=Stop)){
 
 				NbClassifier.updateClassifier(Current);
-			}
-			else{
-
-				break;
-			}
-
-			Start++;
+			    Start++;
 		}
-
-		
+	//	System.out.println("Start : "+ Start);
 	
 	}
 
@@ -73,5 +67,17 @@ public class ClassifierBuilder{
 		System.out.println(NbClassifier);
 	}
 
+	public void EvaluateAgainstTestSet(Instances TestData) throws Exception{
 
+		
+
+		Evaluation Eval = new Evaluation(TestData);
+
+		Eval.evaluateModel(NbClassifier,TestData);
+
+		System.out.println(Eval.toSummaryString());
+
+	}
+
+	
 }

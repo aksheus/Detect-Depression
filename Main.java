@@ -40,6 +40,7 @@ public class Main{
 
 					Builder.PrintClassifier();
 
+					Builder.EvaluateAgainstTestSet(Reader.GetAllTestData());
 					
                 }
                 catch(IOException ioe){
