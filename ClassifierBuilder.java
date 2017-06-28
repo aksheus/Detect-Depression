@@ -73,11 +73,21 @@ public class ClassifierBuilder{
 
 		Evaluation Eval = new Evaluation(TestData);
 
+		double [] Predictions = NbClassifier.distributionForInstance(TestData.get(2));
+
+		for(int Index = 0; Index < Predictions.length; Index++ ){
+
+			System.out.println("Probability of class "+
+				                TestData.classAttribute().value(Index)+
+				                ": "+
+				                 Double.toString(Predictions[Index]));
+		}
+
 		Eval.evaluateModel(NbClassifier,TestData);
 
 		System.out.println(Eval.toSummaryString());
 
 	}
 
-	
+
 }
