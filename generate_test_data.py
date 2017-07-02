@@ -25,7 +25,15 @@ def get_source_files(data_path,required_chunk):
 
 	return files
 
- 
+def get_destination_folders(target_path):
+
+	folders = [ folder for folder in os.listdir(target_path) 
+                if os.path.isdir(
+                os.path.join(target_path,folder)
+               )
+	          ]
+
+	return folders
 
 #</helper functions>
 
@@ -47,6 +55,5 @@ if __name__ == '__main__':
 	if sys.argv[3] is not None:
 		required_chunk = sys.argv[3]
 
-	print get_source_files(data_path,required_chunk)
-
+	print get_destination_folders(target_path)
 #</main>
