@@ -14,22 +14,24 @@ import random
 
 #< helper functions>
 
+join = lambda x,y: os.path.join(x,y)
+
 def get_source_files(data_path,required_chunk):
 
-	chunk_dir = os.path.join(data_path,required_chunk)
+	chunk_dir = join(data_path,required_chunk)
 
-	files = [ file for file in os.listdir(chunk_dir) 
+	files = [ join(chunk_dir,file) for file in os.listdir(chunk_dir) 
 	          if os.path.isfile(
-                os.path.join(chunk_dir,file)
+                join(chunk_dir,file)
 	         ) ]
 
 	return files
 
 def get_destination_folders(target_path):
 
-	folders = [ folder for folder in os.listdir(target_path) 
+	folders = [ join(target_path,folder) for folder in os.listdir(target_path) 
                 if os.path.isdir(
-                os.path.join(target_path,folder)
+                join(target_path,folder)
                )
 	          ]
 
@@ -55,5 +57,6 @@ if __name__ == '__main__':
 	if sys.argv[3] is not None:
 		required_chunk = sys.argv[3]
 
+	print get_source_files(data_path,required_chunk)
 	print get_destination_folders(target_path)
 #</main>
