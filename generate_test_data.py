@@ -9,7 +9,8 @@
 # <imports>
 import os
 import sys 
-import random
+from random import shuffle 
+from shutil import copy 
 #</imports>
 
 #< helper functions>
@@ -57,6 +58,30 @@ if __name__ == '__main__':
 	if sys.argv[3] is not None:
 		required_chunk = sys.argv[3]
 
-	print get_source_files(data_path,required_chunk)
-	print get_destination_folders(target_path)
+	source_files = get_source_files(data_path,required_chunk)
+	destination_folders = get_destination_folders(target_path)
+
+	file_count = len(source_files)
+	folder_count = len(destination_folders)
+
+	folder_capacity = file_count // folder_count
+
+	shuffle(source_files)
+	shuffle(destination_folders)
+
+	start = 0
+	end = folder_capacity 
+
+	for folder in destination_folders:
+		for file in source_files[start:end+1]:
+			copy(file,folder)
+		start = end + 1
+		end+=end 
+
+	# write the random residual files to the last randomly chosen folder
+	last_folder = destination_folders[-1]
+
+	for file in source_files[start:]:
+		copy(file,last_folder)
+
 #</main>
