@@ -75,8 +75,8 @@ if __name__ == '__main__':
 	for folder in destination_folders:
 		for file in source_files[start:end+1]:
 			copy(file,folder)
-		start = end + 1
-		end+=end 
+		start +=folder_capacity
+		end+=folder_capacity
 
 	# write the random residual files to the last randomly chosen folder
 	last_folder = destination_folders[-1]
