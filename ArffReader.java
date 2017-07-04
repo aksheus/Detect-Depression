@@ -1,10 +1,8 @@
 import weka.core.Instances;
 import weka.core.Instance;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.File;
 import java.io.*;
-import weka.core.converters.ArffLoader; 
+import weka.core.converters.ArffLoader;
+import weka.core.converters.ConverterUtils.DataSource;
 
 public class ArffReader {
 
@@ -22,7 +20,33 @@ public class ArffReader {
 		PathToTest = testPath;
 	}
 
-	public Instances GetTrainingData () throws IOException, FileNotFoundException{
+	public Instances GetTrainingData () throws Exception {
+
+		DataSource Source = new DataSource(PathToTrain);
+
+		Instances Data = Source.getDataSet();
+
+		Data.setClassIndex(Data.numAttributes()-1);
+
+		return Data;
+
+	}
+
+
+	public Instances GetTrainingData (int classIndex) throws Exception {
+
+		DataSource Source = new DataSource(PathToTrain);
+
+		Instances Data = Source.getDataSet();
+
+		Data.setClassIndex(classIndex);
+
+		return Data;
+
+	}
+
+
+	public Instances GetTrainingDataIncremental () throws IOException, FileNotFoundException{
 
 		Loader = new ArffLoader();
 
@@ -36,9 +60,10 @@ public class ArffReader {
 
 	}
 
-	public Instances GetTrainingData (int classIndex) throws IOException, FileNotFoundException{
 
-		ArffLoader Loader = new ArffLoader();
+	public Instances GetTrainingDataIncremental (int classIndex) throws IOException, FileNotFoundException{
+
+		Loader = new ArffLoader();
 		
 		Loader.setFile(new File(PathToTrain));
 

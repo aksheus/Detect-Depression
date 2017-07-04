@@ -2,6 +2,8 @@ import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ArffLoader;
 import weka.classifiers.bayes.NaiveBayesUpdateable;
+import weka.classifiers.bayes.*;
+import weka.core.Utils;
 import weka.classifiers.*;
 import java.io.*;
 
@@ -16,15 +18,36 @@ public class ClassifierBuilder{
 
 	private ArffLoader DataLoader;
 
+	private Classifier MyClassifier;
 
-	public ClassifierBuilder(Instances instances , ArffLoader loader){
+	public ClassifierBuilder(String classifierName,Instances instances){
+
+		TrainingData = instances;
+
+		try{
+		
+			String [] NameAndOptions = Utils.splitOptions(classifierName);
+
+			String ClassName = NameAndOptions[0];
+
+			NameAndOptions[0]="";
+
+			MyClassifier = (Classifier) Utils.forName(Classifier.class,ClassName,NameAndOptions);
+		}
+		catch(Exception excep){
+
+			System.out.println(excep.getStackTrace());
+		}
+	
+	}
+
+	public ClassifierBuilder(String  classifierName,Instances instances , ArffLoader loader) {
 
 		TrainingData = instances;
 
 		DataLoader = loader;
 
 		NbClassifier = new NaiveBayesUpdateable();
-
 
 	}
 
@@ -40,14 +63,23 @@ public class ClassifierBuilder{
 		return Count;
 	}
 
+
 	public void TrainClassifier(int percentage) throws Exception{
+
+		MyClassifier.buildClassifier(TrainingData);
+
+
+	}
+
+	// this method is only valid to train classifiers implementing the 'Updateable' interface
+
+	public void TrainClassifierIncremental(int percentage) throws Exception{
 
 
 		NbClassifier.buildClassifier(TrainingData);
 
 		int Stop = (int) Math.floor((GetNumberOfInstances()*percentage)/100);
 
-	//	System.out.println("Stop : "+Stop);
 
 		int Start = 0;
 
@@ -58,13 +90,12 @@ public class ClassifierBuilder{
 				NbClassifier.updateClassifier(Current);
 			    Start++;
 		}
-	//	System.out.println("Start : "+ Start);
 	
-	}
+	} 
 
 	public void PrintClassifier(){
 
-		System.out.println(NbClassifier);
+		System.out.println(MyClassifier);
 	}
 
 	public void EvaluateAgainstTestSet(Instances TestData) throws Exception{
@@ -73,7 +104,7 @@ public class ClassifierBuilder{
 
 		Evaluation Eval = new Evaluation(TestData);
 
-		double [] Predictions = NbClassifier.distributionForInstance(TestData.get(2));
+		double [] Predictions = MyClassifier.distributionForInstance(TestData.get(2));
 
 		for(int Index = 0; Index < Predictions.length; Index++ ){
 
@@ -83,7 +114,7 @@ public class ClassifierBuilder{
 				                 Double.toString(Predictions[Index]));
 		}
 
-		Eval.evaluateModel(NbClassifier,TestData);
+		Eval.evaluateModel(MyClassifier,TestData);
 
 		System.out.println(Eval.toSummaryString());
 

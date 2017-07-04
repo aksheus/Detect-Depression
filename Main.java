@@ -7,7 +7,7 @@ import java.io.*;
 import weka.core.converters.ArffLoader;
 
 /*
-   USAGE : java ArffReader path_to_train_arff path_to_test_arff
+   USAGE : java ArffReader path_to_train_arff path_to_test_arff 
 
    ./labeled_csa_arffs/training_csa.arff
 
@@ -22,6 +22,10 @@ public class Main{
 		File CheckPath1 = new File(args[0]);
 		File CheckPath2 = new File(args[1]);
 
+		System.out.println("Copy paste the weka classifier name from weka gui : ");
+
+		String ClassifierToBuild = System.console().readLine();
+
 		ArffReader Reader;
 
 		if(CheckPath1.exists() && !CheckPath1.isDirectory()){
@@ -33,8 +37,8 @@ public class Main{
 					Reader = new ArffReader(args[0],args[1]);
 
 					ClassifierBuilder Builder =  new ClassifierBuilder(
-						                             Reader.GetTrainingData(),
-						                             Reader.GetLoader()
+													 ClassifierToBuild,
+						                             Reader.GetTrainingData()
 						                             );
 					Builder.TrainClassifier(100);
 
