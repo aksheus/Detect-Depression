@@ -36,7 +36,7 @@ public class ClassifierBuilder{
 		}
 		catch(Exception excep){
 
-			System.out.println(excep.getStackTrace());
+			excep.printStackTrace();
 		}
 	
 	}
@@ -66,8 +66,19 @@ public class ClassifierBuilder{
 
 	public void TrainClassifier(int percentage) throws Exception{
 
-		MyClassifier.buildClassifier(TrainingData);
+		int SubSetSize = (int) Math.floor((TrainingData.numInstances()*percentage)/100);
+		
+		int Start = 0;
 
+		try{
+				Instances TrainingDataSubSet = new Instances(TrainingData,Start,SubSetSize);
+
+				MyClassifier.buildClassifier(TrainingDataSubSet);
+		}
+		catch(IllegalArgumentException iae){
+
+			iae.printStackTrace();
+		}
 
 	}
 
@@ -79,7 +90,6 @@ public class ClassifierBuilder{
 		NbClassifier.buildClassifier(TrainingData);
 
 		int Stop = (int) Math.floor((GetNumberOfInstances()*percentage)/100);
-
 
 		int Start = 0;
 

@@ -26,6 +26,10 @@ public class Main{
 
 		String ClassifierToBuild = System.console().readLine();
 
+		System.out.println("Enter the % of the training data to be used : ");
+
+		int Percentage = Integer.parseInt(System.console().readLine());
+
 		ArffReader Reader;
 
 		if(CheckPath1.exists() && !CheckPath1.isDirectory()){
@@ -40,7 +44,7 @@ public class Main{
 													 ClassifierToBuild,
 						                             Reader.GetTrainingData()
 						                             );
-					Builder.TrainClassifier(100);
+					Builder.TrainClassifier(Percentage);
 
 					Builder.PrintClassifier();
 
@@ -49,11 +53,11 @@ public class Main{
                 }
                 catch(IOException ioe){
 
-                        System.out.println(ioe.getStackTrace());
+                        ioe.printStackTrace();
                 }
                 catch(Exception e){
 
-                	System.out.println(e.getStackTrace());
+                	e.printStackTrace();
                 }
 			}
 			else {
