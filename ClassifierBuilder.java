@@ -14,15 +14,19 @@ public class ClassifierBuilder{
 
 	private Instances TrainingData;
 
-	//private Instances TestData;
-
 	private ArffLoader DataLoader;
 
 	private Classifier MyClassifier;
 
-	public ClassifierBuilder(String classifierName,Instances instances){
+	private double PredictionThreshold;
+
+	private int TrainingPercentage;
+
+	public ClassifierBuilder(String classifierName,Instances instances,int percentage){
 
 		TrainingData = instances;
+
+		TrainingPercentage = percentage;
 
 		try{
 		
@@ -41,7 +45,33 @@ public class ClassifierBuilder{
 	
 	}
 
-	public ClassifierBuilder(String  classifierName,Instances instances , ArffLoader loader) {
+	public ClassifierBuilder(String classifierName,Instances instances,int percentage,double threshold){
+
+		TrainingData = instances;
+
+		TrainingPercentage = percentage;
+
+		PredictionThreshold = threshold;
+
+		try{
+		
+			String [] NameAndOptions = Utils.splitOptions(classifierName);
+
+			String ClassName = NameAndOptions[0];
+
+			NameAndOptions[0]="";
+
+			MyClassifier = (Classifier) Utils.forName(Classifier.class,ClassName,NameAndOptions);
+		}
+		catch(Exception excep){
+
+			excep.printStackTrace();
+		}
+	
+	}
+
+	// in case of inceremental (or) Updateable classifier only 
+	public ClassifierBuilder(Instances instances , ArffLoader loader) {
 
 		TrainingData = instances;
 
@@ -64,9 +94,9 @@ public class ClassifierBuilder{
 	}
 
 
-	public void TrainClassifier(int percentage) throws Exception{
+	public void TrainClassifier() throws Exception{
 
-		int SubSetSize = (int) Math.floor((TrainingData.numInstances()*percentage)/100);
+		int SubSetSize = (int) Math.floor((TrainingData.numInstances()*TrainingPercentage)/100);
 		
 		int Start = 0;
 
@@ -130,5 +160,23 @@ public class ClassifierBuilder{
 
 	}
 
+	// Policy function to decide when predcition is good enough as final prediction
+	private boolean Policy(double probability){
+
+		if(probability >= PredictionThreshold ){
+			return true;
+		}
+		else {
+			return false;
+		}
+
+	}
+
+	/*
+	public void RunEarlyRiskClassification(ChunkReader myChunkReader){
+
+
+	}
+	*/
 
 }

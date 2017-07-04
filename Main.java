@@ -42,9 +42,10 @@ public class Main{
 
 					ClassifierBuilder Builder =  new ClassifierBuilder(
 													 ClassifierToBuild,
-						                             Reader.GetTrainingData()
+						                             Reader.GetTrainingData(),
+						                             Percentage
 						                             );
-					Builder.TrainClassifier(Percentage);
+					Builder.TrainClassifier();
 
 					Builder.PrintClassifier();
 
