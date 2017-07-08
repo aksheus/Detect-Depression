@@ -26,7 +26,6 @@ public class ArffReader {
 
 		PathToTest = testPath;
 
-		System.out.println("ArffReader receieved: "+PathToTest);
 	}	
 
 	public Instances GetTrainingData () throws Exception {

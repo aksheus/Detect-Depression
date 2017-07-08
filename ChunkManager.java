@@ -21,8 +21,6 @@ public class ChunkManager{
 
 		TestDataFolder = testDataFolder;
 
-		System.out.println("chunk manager constructor recieved: "+testDataFolder);
-
 		Subjects = new ArrayList<String> ();
 
 		CurrentChunk = FileBaseName;
@@ -43,9 +41,38 @@ public class ChunkManager{
 	//  subjects are not in same order in all chunks 
 	public List<String> GetSubjectsForCurrentChunk(){
 
-		Subjects.add("smthn");
+	try (BufferedReader BuffReader = new BufferedReader(new FileReader(TestDataFolder+"/"+CurrentChunk+".arff"))) {
+
+	    String Line;
+
+	    while ((Line = BuffReader.readLine()) != null) {
+
+	    	if(Line.charAt(0) != '@'){
+
+	    		String [] SpaceSplitted = Line.split(" ");
+
+	    		String ToSplitFurther = SpaceSplitted[SpaceSplitted.length-1];
+
+	    		String [] UnderScoreSplitted = ToSplitFurther.split("_");
+
+	    		for(String x: UnderScoreSplitted){
+
+	    			if(x.length() > 6 && x.substring(0,7).equals("subject")){
+
+	    				Subjects.add("test_"+x);
+	    			}
+	    		}
+	    	}
+
+	    }
+	}
+	catch(IOException ioe){
+
+		ioe.printStackTrace();
+	}
 
 		return Subjects;
+
 	}
 
 	public Instances GetDataFromCurrentChunk() throws Exception {
@@ -57,21 +84,20 @@ public class ChunkManager{
 	}
 
 
-	/* public static void main(String[] args) {
+	 public static void main(String[] args) {
 
 		try{
 
 			ChunkManager cm = new ChunkManager("./labeled_csa_arffs");
 
-			for( String s : cm.GetSubjectsForCurrentChunk()){
-				System.out.println(s);
-			}
-
 			for(int i=1; i<=10; i++){
 
 				cm.GoToNextChunk(i);
 
-				System.out.println(cm.GetDataFromCurrentChunk());
+				for( String s : cm.GetSubjectsForCurrentChunk()){
+
+					System.out.println(s);
+				}
 
 				System.out.println("################################# "+i);
 
@@ -83,6 +109,6 @@ public class ChunkManager{
 			e.printStackTrace();
 		}
 		
-	} */
+	} 
 
 }
