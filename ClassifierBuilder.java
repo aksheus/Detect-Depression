@@ -172,9 +172,46 @@ public class ClassifierBuilder{
 
 	}
 
-	/*
-	public void RunEarlyRiskClassification(ChunkReader myChunkReader){
+	// for now a dummy delay function 
+	private double CalculateDelay(){
 
+		return 0;
+	}
+
+	/*
+	public void RunEarlyRiskClassificationChunkByChunk(ChunkReader myChunkReader,int howManyChunks){
+
+		get chunks iteratively
+
+		calculate delay ?? delay is for each subject ? or whatever it is for now 
+
+		for each chunk iterate over the instances
+		
+		classify each instance with the help of policy
+
+		it to the file in required format using CsvWriter 
+
+		
+
+	}
+	*/
+
+	/*
+	public void RunEarlyRiskClassificationExhaustive(ChunkReader myChunkReader,int howManyChunks){
+
+		get chunks iteratively
+
+		calculate delay ?? delay is for each subject ? or whatever it is for now 
+
+		for each chunk iterate over the instances
+		
+		classify each instance if policy approves output
+
+		it to the file in required format using CsvWriter 
+
+		if all chunks are used and there are still remaining subjects
+
+		output them as negative class 
 
 	}
 	*/

@@ -20,59 +20,68 @@ public class ArffReader {
 		PathToTest = testPath;
 	}
 
+	public ArffReader (String testPath){
+
+		PathToTrain = "";
+
+		PathToTest = testPath;
+
+		System.out.println("ArffReader receieved: "+PathToTest);
+	}	
+
 	public Instances GetTrainingData () throws Exception {
 
-		DataSource Source = new DataSource(PathToTrain);
+			DataSource Source = new DataSource(PathToTrain);
 
-		Instances Data = Source.getDataSet();
+			Instances Data = Source.getDataSet();
 
-		Data.setClassIndex(Data.numAttributes()-1);
+			Data.setClassIndex(Data.numAttributes()-1);
 
-		return Data;
+			return Data;
 
 	}
 
 
 	public Instances GetTrainingData (int classIndex) throws Exception {
 
-		DataSource Source = new DataSource(PathToTrain);
+			DataSource Source = new DataSource(PathToTrain);
 
-		Instances Data = Source.getDataSet();
+			Instances Data = Source.getDataSet();
 
-		Data.setClassIndex(classIndex);
+			Data.setClassIndex(classIndex);
 
-		return Data;
+			return Data;
 
 	}
 
 
 	public Instances GetTrainingDataIncremental () throws IOException, FileNotFoundException{
 
-		Loader = new ArffLoader();
+			Loader = new ArffLoader();
 
-		Loader.setFile( new File(PathToTrain) );
+			Loader.setFile( new File(PathToTrain) );
 
-		Instances Data = Loader.getStructure();
+			Instances Data = Loader.getStructure();
 
-		Data.setClassIndex(Data.numAttributes()-1);
+			Data.setClassIndex(Data.numAttributes()-1);
 
-		return Data;
+			return Data;
 
 	}
 
 
 	public Instances GetTrainingDataIncremental (int classIndex) throws IOException, FileNotFoundException{
 
-		Loader = new ArffLoader();
-		
-		Loader.setFile(new File(PathToTrain));
 
-		Instances Data = Loader.getStructure();
+			Loader = new ArffLoader();
+			
+			Loader.setFile(new File(PathToTrain));
 
-		Data.setClassIndex(classIndex);
+			Instances Data = Loader.getStructure();
 
-		return Data;
+			Data.setClassIndex(classIndex);
 
+			return Data;
 	}
 
 	public ArffLoader GetLoader(){
@@ -83,7 +92,15 @@ public class ArffReader {
 	// Do class attribute and it's associated values be chucked off in test data before this ?
 	public Instances GetAllTestData () throws Exception {
 
-		BufferedReader BReader = new BufferedReader(
+		DataSource Source = new DataSource(PathToTest);
+
+		Instances Data = Source.getDataSet();
+
+		Data.setClassIndex(Data.numAttributes()-1);
+
+		return Data;		
+
+	/*	BufferedReader BReader = new BufferedReader(
 							     new FileReader(PathToTest)
 			                     );
 
@@ -93,7 +110,19 @@ public class ArffReader {
 
 		Data.setClassIndex(Data.numAttributes()-1);
 
-		return Data;
+		return Data; */
+	}
+
+	public Instances GetAllTestData (int classIndex) throws Exception {
+
+		DataSource Source = new DataSource(PathToTest);
+
+		Instances Data = Source.getDataSet();
+
+		Data.setClassIndex(classIndex);
+
+		return Data;		
+
 	}
 	
 }
