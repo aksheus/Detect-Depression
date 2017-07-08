@@ -56,7 +56,8 @@ public class ChunkManager{
 
 	}
 
-	public static void main(String[] args) {
+
+	/* public static void main(String[] args) {
 
 		try{
 
@@ -82,6 +83,6 @@ public class ChunkManager{
 			e.printStackTrace();
 		}
 		
-	}
+	} */
 
 }
