@@ -26,7 +26,33 @@ public class ArffReader {
 
 		PathToTest = testPath;
 
-	}	
+	}
+
+	public ArffReader(){}
+
+	public Instances GetTrainingData (String path) throws Exception {
+
+			DataSource Source = new DataSource(path);
+
+			Instances Data = Source.getDataSet();
+
+			Data.setClassIndex(Data.numAttributes()-1);
+
+			return Data;
+
+	}
+
+	public Instances GetTrainingData (String path,int classIndex) throws Exception {
+
+			DataSource Source = new DataSource(path);
+
+			Instances Data = Source.getDataSet();
+
+			Data.setClassIndex(classIndex);
+
+			return Data;
+
+	}
 
 	public Instances GetTrainingData () throws Exception {
 

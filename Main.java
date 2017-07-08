@@ -30,26 +30,35 @@ public class Main{
 
 		int Percentage = Integer.parseInt(System.console().readLine());
 
+		System.out.println("Enter the policy probability threshold : ");
+
+		double Threshold = Double.parseDouble(System.console().readLine());
+
 		ArffReader Reader;
 
 		if(CheckPath1.exists() && !CheckPath1.isDirectory()){
 
-			if(CheckPath2.exists() && !CheckPath2.isDirectory()){
+			if(CheckPath2.exists()){
 
 			    try{
 
-					Reader = new ArffReader(args[0],args[1]);
+					Reader = new ArffReader();
 
 					ClassifierBuilder Builder =  new ClassifierBuilder(
 													 ClassifierToBuild,
-						                             Reader.GetTrainingData(),
-						                             Percentage
-						                             );
+						                             Reader.GetTrainingData(args[0]),
+						                             Percentage,
+						                             Threshold
+					                             );
 					Builder.TrainClassifier();
 
 					Builder.PrintClassifier();
 
-					Builder.EvaluateAgainstTestSet(Reader.GetAllTestData());
+					ChunkManager Manager = new ChunkManager(args[1]);
+
+					Builder.RunEarlyRiskClassificationChunkByChunk(Manager,10);
+
+		//			Builder.EvaluateAgainstTestSet(Reader.GetAllTestData()); 
 					
                 }
                 catch(IOException ioe){

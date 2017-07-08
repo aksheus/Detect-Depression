@@ -5,6 +5,7 @@ import weka.classifiers.bayes.NaiveBayesUpdateable;
 import weka.classifiers.bayes.*;
 import weka.core.Utils;
 import weka.classifiers.*;
+import java.util.*;
 import java.io.*;
 
 public class ClassifierBuilder{
@@ -178,10 +179,10 @@ public class ClassifierBuilder{
 		return 0;
 	}
 
-	/*
-	public void RunEarlyRiskClassificationChunkByChunk(ChunkReader myChunkReader,int howManyChunks){
+	
+	public void RunEarlyRiskClassificationChunkByChunk(ChunkManager manager,int howManyChunks) throws Exception{
 
-		get chunks iteratively
+	/*	get chunks iteratively
 
 		calculate delay ?? delay is for each subject ? or whatever it is for now 
 
@@ -189,12 +190,38 @@ public class ClassifierBuilder{
 		
 		classify each instance with the help of policy
 
-		it to the file in required format using CsvWriter 
+		it to the file in required format using CsvWriter */
 
-		
+		for(int OuterIndex=1; OuterIndex<=howManyChunks; OuterIndex++){
 
-	}
-	*/
+			manager.GoToNextChunk(OuterIndex);
+
+			List<String> SubjectNames = manager.GetSubjectsForCurrentChunk();
+
+			Instances TestData = manager.GetDataFromCurrentChunk();
+
+			CsvWriter Writer = new CsvWriter("./output_for_chunk"+Integer.toString(OuterIndex)+".txt");
+
+			for(int InnerIndex =0; InnerIndex < TestData.numInstances(); InnerIndex++ ){
+
+				double [] Predictions = MyClassifier.distributionForInstance(TestData.get(InnerIndex));
+
+				if(Policy(Predictions[1])){
+
+					Writer.AppendToOutput(SubjectNames.get(InnerIndex),1,CalculateDelay());
+				}
+				else{
+
+					Writer.AppendToOutput(SubjectNames.get(InnerIndex),0,CalculateDelay());
+				}
+
+
+			}
+
+		}
+
+	} 
+	
 
 	/*
 	public void RunEarlyRiskClassificationExhaustive(ChunkReader myChunkReader,int howManyChunks){
