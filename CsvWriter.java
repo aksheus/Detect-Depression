@@ -37,6 +37,32 @@ public class CsvWriter{
 		}
 	}
 
+	public void AppendToOutput(String subjectName,double decision,double delay){
+
+		try{
+
+			Double Prediction = decision;
+
+			FileWriter MyFileWriter  = new FileWriter(OutFile,true);
+
+			MyFileWriter.write(subjectName
+								+ " "
+								+ Integer.toString(Prediction.intValue())
+								+" "
+								+ Double.toString(delay)
+								+"\n"
+				);
+
+			MyFileWriter.close();
+
+
+		}
+		catch(IOException ioe){
+
+			ioe.printStackTrace();
+		}
+	}
+
 	/*public static void main(String[] args) {
 
 		CsvWriter w = new CsvWriter("./pffft.txt");

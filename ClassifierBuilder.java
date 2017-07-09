@@ -159,11 +159,11 @@ public class ClassifierBuilder{
 
 		System.out.println(Eval.toSummaryString());
 
-		System.out.println("Precision : "+Eval.precision(1));
+		//System.out.println("Precision : "+Eval.precision(1));
 
-		System.out.println("Recall : "+Eval.recall(1));
+		//System.out.println("Recall : "+Eval.recall(1));
 
-		System.out.println("F-Measure : "+Eval.fMeasure(1));
+		//System.out.println("F-Measure : "+Eval.fMeasure(1));
 
 		System.out.println("#############################################");
 
@@ -208,8 +208,6 @@ public class ClassifierBuilder{
 
 			Instances TestData = manager.GetDataFromCurrentChunk();
 
-			EvaluateAgainstTestSet(TestData);
-
 			CsvWriter Writer = new CsvWriter("./output_for_chunk"+Integer.toString(OuterIndex)+".txt");
 
 			for(int InnerIndex =0; InnerIndex < TestData.numInstances(); InnerIndex++ ){
@@ -226,6 +224,29 @@ public class ClassifierBuilder{
 				}
 
 
+			}
+
+		}
+
+	}
+
+	public void RunEarlyRiskClassificationChunkByChunkNoPolicy(ChunkManager manager,int howManyChunks) throws Exception{
+
+		for(int OuterIndex=1; OuterIndex<=howManyChunks; OuterIndex++){
+
+			manager.GoToNextChunk(OuterIndex);
+
+			List<String> SubjectNames = manager.GetSubjectsForCurrentChunk();
+
+			Instances TestData = manager.GetDataFromCurrentChunk();
+
+			CsvWriter Writer = new CsvWriter("./output_for_chunk"+Integer.toString(OuterIndex)+".txt");
+
+			for(int InnerIndex =0; InnerIndex < TestData.numInstances(); InnerIndex++ ){
+
+					Writer.AppendToOutput(SubjectNames.get(InnerIndex),
+						MyClassifier.classifyInstance(TestData.get(InnerIndex)),
+						CalculateDelay());
 			}
 
 		}
