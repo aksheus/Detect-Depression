@@ -145,7 +145,7 @@ public class ClassifierBuilder{
 
 		Evaluation Eval = new Evaluation(TestData);
 
-		double [] Predictions = MyClassifier.distributionForInstance(TestData.get(2));
+		/*double [] Predictions = MyClassifier.distributionForInstance(TestData.get(2));
 
 		for(int Index = 0; Index < Predictions.length; Index++ ){
 
@@ -153,11 +153,19 @@ public class ClassifierBuilder{
 				                TestData.classAttribute().value(Index)+
 				                ": "+
 				                 Double.toString(Predictions[Index]));
-		}
+		} */
 
 		Eval.evaluateModel(MyClassifier,TestData);
 
 		System.out.println(Eval.toSummaryString());
+
+		System.out.println("Precision : "+Eval.precision(1));
+
+		System.out.println("Recall : "+Eval.recall(1));
+
+		System.out.println("F-Measure : "+Eval.fMeasure(1));
+
+		System.out.println("#############################################");
 
 	}
 
@@ -199,6 +207,8 @@ public class ClassifierBuilder{
 			List<String> SubjectNames = manager.GetSubjectsForCurrentChunk();
 
 			Instances TestData = manager.GetDataFromCurrentChunk();
+
+			EvaluateAgainstTestSet(TestData);
 
 			CsvWriter Writer = new CsvWriter("./output_for_chunk"+Integer.toString(OuterIndex)+".txt");
 

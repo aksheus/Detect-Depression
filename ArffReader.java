@@ -6,57 +6,33 @@ import weka.core.converters.ConverterUtils.DataSource;
 
 public class ArffReader {
 
-	private String PathToTrain;
+	//private String PathToTrain;
 
-	private String PathToTest;
+	//private String PathToTest;
 
 	private ArffLoader Loader;
 
 
-	public ArffReader (String trainPath , String testPath){
+/*	public ArffReader (String trainPath , String testPath){
 
 		PathToTrain = trainPath;
 
 		PathToTest = testPath;
-	}
+	} */
 
-	public ArffReader (String testPath){
+/*	public ArffReader (String testPath){
 
 		PathToTrain = "";
 
 		PathToTest = testPath;
 
-	}
+	} */
 
 	public ArffReader(){}
 
-	public Instances GetTrainingData (String path) throws Exception {
+	public Instances GetTrainingData (String pathToTrain) throws Exception {
 
-			DataSource Source = new DataSource(path);
-
-			Instances Data = Source.getDataSet();
-
-			Data.setClassIndex(Data.numAttributes()-1);
-
-			return Data;
-
-	}
-
-	public Instances GetTrainingData (String path,int classIndex) throws Exception {
-
-			DataSource Source = new DataSource(path);
-
-			Instances Data = Source.getDataSet();
-
-			Data.setClassIndex(classIndex);
-
-			return Data;
-
-	}
-
-	public Instances GetTrainingData () throws Exception {
-
-			DataSource Source = new DataSource(PathToTrain);
+			DataSource Source = new DataSource(pathToTrain);
 
 			Instances Data = Source.getDataSet();
 
@@ -66,10 +42,9 @@ public class ArffReader {
 
 	}
 
+	public Instances GetTrainingData (String pathToTrain,int classIndex) throws Exception {
 
-	public Instances GetTrainingData (int classIndex) throws Exception {
-
-			DataSource Source = new DataSource(PathToTrain);
+			DataSource Source = new DataSource(pathToTrain);
 
 			Instances Data = Source.getDataSet();
 
@@ -80,11 +55,11 @@ public class ArffReader {
 	}
 
 
-	public Instances GetTrainingDataIncremental () throws IOException, FileNotFoundException{
+	public Instances GetTrainingDataIncremental (String pathToTrain) throws IOException, FileNotFoundException{
 
 			Loader = new ArffLoader();
 
-			Loader.setFile( new File(PathToTrain) );
+			Loader.setFile( new File(pathToTrain) );
 
 			Instances Data = Loader.getStructure();
 
@@ -95,12 +70,12 @@ public class ArffReader {
 	}
 
 
-	public Instances GetTrainingDataIncremental (int classIndex) throws IOException, FileNotFoundException{
+	public Instances GetTrainingDataIncremental (String pathToTrain,int classIndex) throws IOException, FileNotFoundException{
 
 
 			Loader = new ArffLoader();
 			
-			Loader.setFile(new File(PathToTrain));
+			Loader.setFile(new File(pathToTrain));
 
 			Instances Data = Loader.getStructure();
 
@@ -115,9 +90,9 @@ public class ArffReader {
 	}
 
 	// Do class attribute and it's associated values be chucked off in test data before this ?
-	public Instances GetAllTestData () throws Exception {
+	public Instances GetAllTestData (String pathToTest) throws Exception {
 
-		DataSource Source = new DataSource(PathToTest);
+		DataSource Source = new DataSource(pathToTest);
 
 		Instances Data = Source.getDataSet();
 
@@ -136,11 +111,11 @@ public class ArffReader {
 		Data.setClassIndex(Data.numAttributes()-1);
 
 		return Data; */
-	}
+	} 
 
-	public Instances GetAllTestData (int classIndex) throws Exception {
+	public Instances GetAllTestData (String pathToTest,int classIndex) throws Exception {
 
-		DataSource Source = new DataSource(PathToTest);
+		DataSource Source = new DataSource(pathToTest);
 
 		Instances Data = Source.getDataSet();
 

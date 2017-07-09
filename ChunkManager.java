@@ -24,6 +24,9 @@ public class ChunkManager{
 		Subjects = new ArrayList<String> ();
 
 		CurrentChunk = FileBaseName;
+
+		MyArffReader = new ArffReader();
+
 	}
 
 	public void GoToNextChunk(int index){
@@ -77,9 +80,7 @@ public class ChunkManager{
 
 	public Instances GetDataFromCurrentChunk() throws Exception {
 
-		MyArffReader = new ArffReader(TestDataFolder+"/"+CurrentChunk+".arff");
-
-		return MyArffReader.GetAllTestData();
+		return MyArffReader.GetAllTestData(TestDataFolder+"/"+CurrentChunk+".arff");
 
 	}
 

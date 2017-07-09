@@ -56,6 +56,8 @@ public class Main{
 
 					ChunkManager Manager = new ChunkManager(args[1]);
 
+					//Builder.EvaluateAgainstTestSet(Reader.GetAllTestData(args[1]+"/test_chunk1-2-3.arff"));
+
 					Builder.RunEarlyRiskClassificationChunkByChunk(Manager,10);
 
 		//			Builder.EvaluateAgainstTestSet(Reader.GetAllTestData()); 
