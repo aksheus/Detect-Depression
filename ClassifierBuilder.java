@@ -159,13 +159,35 @@ public class ClassifierBuilder{
 
 		System.out.println(Eval.toSummaryString());
 
-		//System.out.println("Precision : "+Eval.precision(1));
-
-		//System.out.println("Recall : "+Eval.recall(1));
-
-		//System.out.println("F-Measure : "+Eval.fMeasure(1));
+		System.out.println(Eval.toClassDetailsString());
 
 		System.out.println("#############################################");
+
+	}
+
+	public void EvaluateAgainstTestSet(Instances TestData,int whichChunk) throws Exception{
+
+		
+
+		Evaluation Eval = new Evaluation(TestData);
+
+		/*double [] Predictions = MyClassifier.distributionForInstance(TestData.get(2));
+
+		for(int Index = 0; Index < Predictions.length; Index++ ){
+
+			System.out.println("Probability of class "+
+				                TestData.classAttribute().value(Index)+
+				                ": "+
+				                 Double.toString(Predictions[Index]));
+		} */
+
+		Eval.evaluateModel(MyClassifier,TestData);
+
+		System.out.println(Eval.toSummaryString());
+
+		System.out.println(Eval.toClassDetailsString());
+
+		System.out.println("######################"+"upto chunk: "+whichChunk+"#######################");
 
 	}
 
@@ -207,6 +229,9 @@ public class ClassifierBuilder{
 			List<String> SubjectNames = manager.GetSubjectsForCurrentChunk();
 
 			Instances TestData = manager.GetDataFromCurrentChunk();
+
+			// Get console output for no policy #weka metrics 
+			//EvaluateAgainstTestSet(TestData,OuterIndex);
 
 			CsvWriter Writer = new CsvWriter("./output_for_chunk"+Integer.toString(OuterIndex)+".txt");
 
@@ -254,12 +279,10 @@ public class ClassifierBuilder{
 	} 
 	
 
-	/*
-	public void RunEarlyRiskClassificationExhaustive(ChunkReader myChunkReader,int howManyChunks){
+	
+	public void RunEarlyRiskClassificationExhaustive(ChunkManager manager,int howManyChunks) throws Exception{
 
-		get chunks iteratively
-
-		calculate delay ?? delay is for each subject ? or whatever it is for now 
+	/*	get chunks iteratively
 
 		for each chunk iterate over the instances
 		
@@ -269,9 +292,45 @@ public class ClassifierBuilder{
 
 		if all chunks are used and there are still remaining subjects
 
-		output them as negative class 
+		output them as negative class */
+
+		for(int OuterIndex=1; OuterIndex<=howManyChunks; OuterIndex++){
+
+			manager.GoToNextChunk(OuterIndex);
+
+			List<String> SubjectNames = manager.GetSubjectsForCurrentChunk();
+
+			Instances TestData = manager.GetDataFromCurrentChunk();
+
+			// Get console output for no policy #weka metrics 
+			//EvaluateAgainstTestSet(TestData,OuterIndex);
+
+			CsvWriter Writer = new CsvWriter("./ritual_"+Integer.toString(OuterIndex)+".txt");
+
+			for(int InnerIndex =0; InnerIndex < TestData.numInstances(); InnerIndex++ ){
+
+				double [] Predictions = MyClassifier.distributionForInstance(TestData.get(InnerIndex));
+
+				if(Policy(Predictions[1])){
+					// probbaly depressed say it !!
+					Writer.AppendToOutput(SubjectNames.get(InnerIndex),1);
+				}
+				else if(OuterIndex == 10){
+
+					// no more hope have to say not depressed 
+					Writer.AppendToOutput(SubjectNames.get(InnerIndex),2);
+				}
+				else{
+					// dont't say they are not depressed yet !!
+					Writer.AppendToOutput(SubjectNames.get(InnerIndex),0);
+				}
+
+
+			}
+
+		}
 
 	}
-	*/
+	
 
 }

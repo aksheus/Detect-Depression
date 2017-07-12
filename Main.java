@@ -58,7 +58,7 @@ public class Main{
 
 					//Builder.EvaluateAgainstTestSet(Reader.GetAllTestData(args[1]+"/test_chunk1-2-3.arff"));
 
-					Builder.RunEarlyRiskClassificationChunkByChunkNoPolicy(Manager,10);
+					Builder.RunEarlyRiskClassificationExhaustive(Manager,10);
 
 		//			Builder.EvaluateAgainstTestSet(Reader.GetAllTestData()); 
 					
