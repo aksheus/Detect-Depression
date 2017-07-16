@@ -94,6 +94,7 @@ if __name__=='__main__':
 
 		print 'required dev set positive samples {0}'.format(large_chunk_positive)
 
+		alright = True
 		
 		with open('./'+outfile+'.arff','w') as out:
 
@@ -122,9 +123,11 @@ if __name__=='__main__':
 					out.write(negative_samples.pop())
 
 			except IndexError:
-				print 'the given ratio is not possible try another one'
+				print 'the given ratio is not possible try another one and delete output file'
+				alright = False
 
-		print 'Done check for '+outfile+'.arff'
+		if alright:
+			print 'Done check for '+outfile+'.arff'
 
 
 
