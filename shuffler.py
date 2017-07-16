@@ -124,6 +124,8 @@ if __name__=='__main__':
 			except IndexError:
 				print 'the given ratio is not possible try another one'
 
+		print 'Done check for'+outfile+'.arff'
+
 
 
 
