@@ -1,10 +1,19 @@
 """
-	USAGE : shuffler.py <path_to_train_arff> <percentage> <positive:negative_porportion> <output-file-name>
+	USAGE : shuffler.py <path_to_train_arff> <percentage> <positive sample weight> <negative sample weight> <output-file-name>
+
+	example : python shuffler.py ./train.arff 80 2 3 out
+
+	divides training set into chunks of size 80% and 20% of original size
+
+	and each set will maintain the ratio 2:3 for positive_samples : negative_samples
 
 """
+from __future__ import division
+from random import shuffle 
 import sys
 import os
 import traceback
+
 
 if __name__=='__main__':
 
@@ -21,12 +30,16 @@ if __name__=='__main__':
 			print 'percentage range must be [0-100]'
 			exit(2)
 
-		proportion = float(sys.argv[3])
+		numerator = int(sys.argv[3])
+		denominator = int(sys.argv[4])
 
-		if proportion < 0 or proportion > 1 :
-			print 'proportion must be a ratio between 0 and 1'
+		ratio = numerator/denominator
 
-		outfile = sys.argv[4] 
+		if ratio < 0 or ratio > 1:
+			print 'ratio of positive to negative samples is invalid'
+			exit(3)
+
+		outfile = sys.argv[5] 
 
 	except Exception:
 		print traceback.format_exc()
@@ -39,18 +52,11 @@ if __name__=='__main__':
 
 		data_flag= False
 
-		debug = True
-
 		for line in tf:
 
 			pieces = line.split()
 
 			if data_flag:
-
-				if debug:
-					print 'line : {0}'.format(line)
-					print 'line [-2] : {0}'.format(line[-2])
-					debug = False
 
 				if pieces[-2] == '1':
 					positive_samples.append(line)
@@ -64,12 +70,37 @@ if __name__=='__main__':
 			if pieces[0] == '@data':
 				data_flag = True
 
-		print len(attributes)
-		print attributes
-		print len(positive_samples)
-		#print positive_samples
-		print len(negative_samples)
-		#print negative_samples
+		shuffle(positive_samples)
+		shuffle(negative_samples)
+
+		total_samples = len(positive_samples) + len(negative_samples)
+
+		print total_samples
+
+		large_chunk_halt = (total_samples * percentage ) // 100
+
+		print large_chunk_halt
+
+		large_chunk = []
+
+		large_chunk_negative = ( large_chunk_halt * numerator ) // denominator 
+
+		print large_chunk_negative
+
+		large_chunk_positive = large_chunk_halt - large_chunk_negative
+
+		print large_chunk_positive
+
+
+
+
+
+
+		
+
+
+
+		
 
 
 
