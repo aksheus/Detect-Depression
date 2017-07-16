@@ -1,9 +1,9 @@
 """
 	USAGE : shuffler.py <path_to_train_arff> <percentage> <positive sample weight> <negative sample weight> <output-file-name>
 
-	example : python shuffler.py ./train.arff 80 2 3 out
+	example : python shuffler.py ./train.arff 80 2 3 output_file 
 
-	divides training set into chunks of size 80% and 20% of original size
+	divides training set into chunks of size 80% and 20% of original size in which instances are assigned randomly 
 
 	and each set will maintain the ratio 2:3 for positive_samples : negative_samples
 
@@ -73,23 +73,63 @@ if __name__=='__main__':
 		shuffle(positive_samples)
 		shuffle(negative_samples)
 
+		print 'negative samples  : {0}'.format(len(negative_samples))
+		print 'positive samples : {0}'.format(len(positive_samples))
+
 		total_samples = len(positive_samples) + len(negative_samples)
 
-		print total_samples
+		print 'total_samples : {0}'.format(total_samples)
 
 		large_chunk_halt = (total_samples * percentage ) // 100
 
-		print large_chunk_halt
+		print 'dev set size  : {0}'.format(large_chunk_halt)
 
-		large_chunk = []
+		print 'test set size : {0}'.format(total_samples - large_chunk_halt)
+		
+		large_chunk_negative = ( large_chunk_halt * numerator ) // denominator
 
-		large_chunk_negative = ( large_chunk_halt * numerator ) // denominator 
-
-		print large_chunk_negative
+		print 'required dev set negative samples {0}'.format(large_chunk_negative) 
 
 		large_chunk_positive = large_chunk_halt - large_chunk_negative
 
-		print large_chunk_positive
+		print 'required dev set positive samples {0}'.format(large_chunk_positive)
+
+		
+		with open('./'+outfile+'.arff','w') as out:
+
+			try:
+
+				for attr in attributes:
+					out.write(attr)
+
+				# these two loops will be part of the dev set if you give the same percentage to Main.java
+				for x in xrange(large_chunk_positive):
+
+					line_to_write = positive_samples.pop()
+					out.write(line_to_write)
+
+				for y in xrange(large_chunk_negative):
+
+					line_to_write = negative_samples.pop()
+					out.write(line_to_write)
+
+				# the below part will be part of the test set
+
+				while positive_samples:
+					out.write(positive_samples.pop())
+
+				while negative_samples:
+					out.write(negative_samples.pop())
+
+			except IndexError:
+				print 'the given ratio is not possible try another one'
+
+
+
+
+
+
+
 
 
 
