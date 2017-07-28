@@ -23,6 +23,8 @@ public class ClassifierBuilder{
 
 	private int TrainingPercentage;
 
+	public Instances DevTestSet;
+
 	public ClassifierBuilder(String classifierName,Instances instances,int percentage){
 
 		TrainingData = instances;
@@ -97,19 +99,32 @@ public class ClassifierBuilder{
 
 	public void TrainClassifier() throws Exception{
 
-		int SubSetSize = (int) Math.floor((TrainingData.numInstances()*TrainingPercentage)/100);
-		
-		int Start = 0;
+		if (TrainingPercentage == 100 ){
 
-		try{
-				Instances TrainingDataSubSet = new Instances(TrainingData,Start,SubSetSize);
-
-				MyClassifier.buildClassifier(TrainingDataSubSet);
+					MyClassifier.buildClassifier(TrainingData);
 		}
-		catch(IllegalArgumentException iae){
+		else{
 
-			iae.printStackTrace();
-		}
+			int SubSetSize = (int) Math.floor((TrainingData.numInstances()*TrainingPercentage)/100);
+
+			int Total = TrainingData.numInstances();
+
+			int Start = 0;
+
+			try{
+					
+						Instances TrainingDataSubSet = new Instances(TrainingData,Start,SubSetSize);
+
+						DevTestSet = new Instances(TrainingData,SubSetSize,Total - SubSetSize);
+
+						MyClassifier.buildClassifier(TrainingDataSubSet);
+					
+			}
+			catch(IllegalArgumentException iae){
+
+				iae.printStackTrace();
+			}
+	    }
 
 	}
 
@@ -139,11 +154,11 @@ public class ClassifierBuilder{
 		System.out.println(MyClassifier);
 	}
 
-	public void EvaluateAgainstTestSet(Instances TestData) throws Exception{
+	public void EvaluateAgainstTestSet(Instances testData) throws Exception{
 
 		
 
-		Evaluation Eval = new Evaluation(TestData);
+		Evaluation Eval = new Evaluation(testData);
 
 		/*double [] Predictions = MyClassifier.distributionForInstance(TestData.get(2));
 
@@ -155,7 +170,7 @@ public class ClassifierBuilder{
 				                 Double.toString(Predictions[Index]));
 		} */
 
-		Eval.evaluateModel(MyClassifier,TestData);
+		Eval.evaluateModel(MyClassifier,testData);
 
 		System.out.println(Eval.toSummaryString());
 
@@ -165,23 +180,23 @@ public class ClassifierBuilder{
 
 	}
 
-	public void EvaluateAgainstTestSet(Instances TestData,int whichChunk) throws Exception{
+	public void EvaluateAgainstTestSet(Instances testData,int whichChunk) throws Exception{
 
 		
 
-		Evaluation Eval = new Evaluation(TestData);
+		Evaluation Eval = new Evaluation(testData);
 
-		/*double [] Predictions = MyClassifier.distributionForInstance(TestData.get(2));
+		double [] Predictions = MyClassifier.distributionForInstance(testData.get(2));
 
 		for(int Index = 0; Index < Predictions.length; Index++ ){
 
 			System.out.println("Probability of class "+
-				                TestData.classAttribute().value(Index)+
+				                testData.classAttribute().value(Index)+
 				                ": "+
 				                 Double.toString(Predictions[Index]));
-		} */
+		} 
 
-		Eval.evaluateModel(MyClassifier,TestData);
+		Eval.evaluateModel(MyClassifier,testData);
 
 		System.out.println(Eval.toSummaryString());
 
@@ -195,6 +210,17 @@ public class ClassifierBuilder{
 	private boolean Policy(double probability){
 
 		if(probability >= PredictionThreshold ){
+			return true;
+		}
+		else {
+			return false;
+		}
+
+	}
+
+	private boolean PolicyWithDiff(double probability){
+
+		if(Math.abs(probability - PredictionThreshold ) >= 0.1){
 			return true;
 		}
 		else {
@@ -303,7 +329,7 @@ public class ClassifierBuilder{
 			Instances TestData = manager.GetDataFromCurrentChunk();
 
 			// Get console output for no policy #weka metrics 
-			//EvaluateAgainstTestSet(TestData,OuterIndex);
+			EvaluateAgainstTestSet(TestData,OuterIndex);
 
 			CsvWriter Writer = new CsvWriter("./ritual_"+Integer.toString(OuterIndex)+".txt");
 
@@ -311,19 +337,34 @@ public class ClassifierBuilder{
 
 				double [] Predictions = MyClassifier.distributionForInstance(TestData.get(InnerIndex));
 
-				if(Policy(Predictions[1])){
-					// probbaly depressed say it !!
-					Writer.AppendToOutput(SubjectNames.get(InnerIndex),1);
-				}
-				else if(OuterIndex == 10){
+				boolean isFirstIndexGreater = true; // negative 
 
-					// no more hope have to say not depressed 
-					Writer.AppendToOutput(SubjectNames.get(InnerIndex),2);
+				if(Predictions[1] > Predictions[0]){
+					isFirstIndexGreater= false;
 				}
-				else{
+
+				boolean Written = false;
+
+				if(isFirstIndexGreater){
+					// probbaly not depressed say it !!
+					if(Policy(Predictions[0])){
+
+						Writer.AppendToOutput(SubjectNames.get(InnerIndex),2);
+						Written = true;
+				    }
+				}else {
+
+					if(Policy(Predictions[1])){
+
+						Writer.AppendToOutput(SubjectNames.get(InnerIndex),1);
+						Written = true;
+					}
+				}
+				if(!Written)
+				{ 
 					// dont't say they are not depressed yet !!
-					Writer.AppendToOutput(SubjectNames.get(InnerIndex),0);
-				}
+					Writer.AppendToOutput(SubjectNames.get(InnerIndex),0); 
+				} 
 
 
 			}
@@ -332,5 +373,39 @@ public class ClassifierBuilder{
 
 	}
 	
+/*	public void RunEarlyRiskClassificationExhaustiveWithCache(ChunkManager manager,int howManyChunks) throws Exception{
+
+		HashMap <String,Integer> Cache = new HashMap <String,Integer> ();
+
+		for(int OuterIndex=1; OuterIndex<=howManyChunks; OuterIndex++){
+
+			manager.GoToNextChunk(OuterIndex);
+
+			List<String> SubjectNames = manager.GetSubjectsForCurrentChunk();
+
+			Instances TestData = manager.GetDataFromCurrentChunk();
+
+			// Get console output for no policy #weka metrics 
+			//EvaluateAgainstTestSet(TestData,OuterIndex);
+
+			CsvWriter Writer = new CsvWriter("./ritual_"+Integer.toString(OuterIndex)+".txt");
+
+			for(int InnerIndex =0; InnerIndex < TestData.numInstances(); InnerIndex++ ){
+
+				double [] Predictions = MyClassifier.distributionForInstance(TestData.get(InnerIndex));
+
+				Double Prediction = MyClassifier.classifyInstance(TestData.get(InnerIndex));
+
+
+		
+//					Writer.AppendToOutput(SubjectNames.get(InnerIndex),0); 
+				
+
+
+			}
+
+		}
+
+	} */
 
 }

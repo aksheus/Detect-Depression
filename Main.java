@@ -7,11 +7,11 @@ import java.io.*;
 import weka.core.converters.ArffLoader;
 
 /*
-   USAGE : java ArffReader path_to_train_arff path_to_test_arff 
+   USAGE : java ArffReader path_to_train_arff path_to_test_folder 
 
    ./labeled_csa_arffs/training_csa.arff
 
-   ./labeled_csa_arffs/test_csa.arff 
+   ./labeled_csa_arffs 
 
 */
 
@@ -53,6 +53,8 @@ public class Main{
 					Builder.TrainClassifier();
 
 					Builder.PrintClassifier();
+
+					//Builder.EvaluateAgainstTestSet(Builder.DevTestSet);
 
 					ChunkManager Manager = new ChunkManager(args[1]);
 

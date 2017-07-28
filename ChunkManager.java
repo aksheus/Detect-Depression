@@ -17,6 +17,7 @@ public class ChunkManager{
 
 	private ArffReader MyArffReader;
 
+
 	public ChunkManager (String testDataFolder){
 
 		TestDataFolder = testDataFolder;
@@ -63,7 +64,7 @@ public class ChunkManager{
 	    			if(x.length() > 6 && x.substring(0,7).equals("subject")){
 
 	    				// Subjects.add("test_"+x);
-	    				Subjects.add("test_subject_"+x.substring(7,x.length()));
+	    				Subjects.add("test_subject"+x.substring(7,x.length()));
 
 	    			}
 	    		}
