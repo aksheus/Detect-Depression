@@ -46,14 +46,12 @@ def get_all_files(path,sign,username):
 	chunks = ['chunk_'+str(x) for x in xrange(1,11) ]
 
 	try:
-		userfiles = []
 		for chunk in chunks:
 			folder = required_dir + '/' + chunk
 			for entry in os.listdir(folder):
 				if isfile(join(folder,entry)) and username in entry:
-					userfiles.append(join(folder,entry))
-		return userfiles
-
+					yield join(folder,entry)
+		
 	except Exception:
 		print 'directory structure not proper (maybe)'
 		traceback.format_exc()
@@ -93,10 +91,10 @@ if __name__ == '__main__':
 	test_pos = get_popped_list(positive_users,test_positive_users)  
 	test_neg = get_popped_list(negative_users,test_negative_users)
 
-	l = get_all_files(args['path'],'positive',oversample_users[0])
-	print len(l)
-	for bleh in l:
-		print bleh
+	for userfile in get_all_files(args['path'],'positive',oversample_users[0]):
+		print userfile
+
+
 
 
 
