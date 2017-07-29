@@ -30,6 +30,14 @@ def get_usernames(path,sign):
 
 	return [ u.split('.')[0] for u in os.listdir(target_folder) if isfile(join(target_folder,u)) ]
 
+def get_popped_list(anylist, how_much_pop):
+	new = []
+	counter = 0
+	while  counter < how_much_pop:
+		new.append(anylist.pop())
+		counter+=1
+	return new 
+
 if __name__ == '__main__':
 
 	parser = argparse.ArgumentParser(description='USAGE :   python deveset_generator.py --path ./train --splitpercentage 70 --oversampling yes --fparam 4 ')
@@ -49,11 +57,26 @@ if __name__ == '__main__':
 	train_size = ( total_users * int(args['splitpercentage']) ) // 100 
 	test_size = total_users - train_size 
 
-	train_positive_users = (train_size * len(positive_users) ) // len(negative_users)
-	train_negative_users = train_size - train_positive_users
+	test_positive_users = (len(positive_users) * test_size ) // train_size
+	test_negative_users = (len(negative_users) * test_size ) // train_size
 
-	test_positive_users = (test_size * len(positive_users)) // len(negative_users)
-	test_negative_users = test_size - test_positive_users
+	train_positive_users = len(positive_users) - test_positive_users
+	train_negative_users = len(negative_users) - test_negative_users
+
+	print 'test'
+	print test_positive_users
+	print test_negative_users
+	print test_positive_users/test_negative_users
+
+	print 'train'
+	print train_positive_users
+	print train_negative_users
+	print train_positive_users/train_negative_users
+
+
+
+	
+
 	
 
 
