@@ -1,3 +1,5 @@
+from __future__ import division 
+from random import shuffle 
 import os 
 import argparse
 
@@ -30,16 +32,26 @@ def get_usernames(path,sign):
 
 if __name__ == '__main__':
 
-	parser = argparse.ArgumentParser(description='USAGE :   python deveset_generator.py --path . --oversampling yes --fparam 4 ')
+	parser = argparse.ArgumentParser(description='USAGE :   python deveset_generator.py --path ./train --splitpercentage 70 --oversampling yes --fparam 4 ')
 	parser.add_argument('-p','--path',help='path to train data folder',required=True)
 	parser.add_argument('-sp','--splitpercentage',help='size of the devset in percentage',required=True)
 	parser.add_argument('-o','--oversampling',help='if oversampling say yes else no',required=True)
 	parser.add_argument('-f','--fparam',help='f parameter')
 	args= vars(parser.parse_args())
 
-	print get_usernames(args['path'],'positive')
+	positive_users =  get_usernames(args['path'],'positive')
+	negative_users =  get_usernames(args['path'],'negative')
 
-	print get_usernames(args['path'],'negative')
+	shuffle(positive_users)
+	shuffle(negative_users)
+
+	total_users = len(positive_users) + len(negative_users)
+	train_size = ( total_users * int(args['splitpercentage']) ) // 100 
+	test_size = total_users - train_size 
+
+
+
+
 
 
 
