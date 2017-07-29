@@ -15,16 +15,15 @@ isdir = lambda x: os.path.isdir(x)
 isfile = lambda y: os.path.isfile(y)
 
 
-def get_usernames(path):
+def get_usernames(path,sign):
 	# get user names from <path>/<positive folder>/<chunk1-2>
 
 	subdirs = [ join(path,subdir) for subdir in os.listdir(path) if isdir(join(path,subdir))]
-	print 
-	positive_dir = [ subdir for subdir in subdirs if 'positive' in subdir ] [0]
-	target_folder = positive_dir+'/'+'chunk1-2'
+	required_dir = [ subdir for subdir in subdirs if sign in subdir ] [0]
+	target_folder = required_dir+'/'+'chunk1-2'
 
 	if not isdir(target_folder):
-		print 'positive users subfolder does not have chunk1-2 !!'
+		print sign+'users subfolder does not have chunk1-2 !!'
 		exit(1)
 
 	return [ u.split('.')[0] for u in os.listdir(target_folder) if isfile(join(target_folder,u)) ]
@@ -33,11 +32,14 @@ if __name__ == '__main__':
 
 	parser = argparse.ArgumentParser(description='USAGE :   python deveset_generator.py --path . --oversampling yes --fparam 4 ')
 	parser.add_argument('-p','--path',help='path to train data folder',required=True)
+	parser.add_argument('-sp','--splitpercentage',help='size of the devset in percentage',required=True)
 	parser.add_argument('-o','--oversampling',help='if oversampling say yes else no',required=True)
 	parser.add_argument('-f','--fparam',help='f parameter')
 	args= vars(parser.parse_args())
 
-	print get_usernames(args['path'])
+	print get_usernames(args['path'],'positive')
+
+	print get_usernames(args['path'],'negative')
 
 
 
