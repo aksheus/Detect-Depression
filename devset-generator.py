@@ -2,6 +2,7 @@ from __future__ import division
 from random import shuffle 
 import os 
 import argparse
+import traceback
 
 """
         Generate dev set in such a way that 
@@ -36,7 +37,26 @@ def get_popped_list(anylist, how_much_pop):
 	while  counter < how_much_pop:
 		new.append(anylist.pop())
 		counter+=1
-	return new 
+	return new
+
+def get_all_files(path,sign,username):
+
+	subdirs = [ join(path,subdir) for subdir in os.listdir(path) if isdir(join(path,subdir))]
+	required_dir = [ subdir for subdir in subdirs if sign in subdir ] [0]
+	chunks = ['chunk_'+str(x) for x in xrange(1,11) ]
+
+	try:
+		userfiles = []
+		for chunk in chunks:
+			folder = required_dir + '/' + chunk
+			for entry in os.listdir(folder):
+				if isfile(join(folder,entry)) and username in entry:
+					userfiles.append(join(folder,entry))
+		return userfiles
+
+	except Exception:
+		print 'directory structure not proper (maybe)'
+		traceback.format_exc()
 
 if __name__ == '__main__':
 
@@ -65,9 +85,18 @@ if __name__ == '__main__':
 	train_positive_users = len(positive_users) - test_positive_users
 	train_negative_users = len(negative_users) - test_negative_users
 
+	# dev-train = oversample_users + train_neg
 	oversample_users = get_popped_list(positive_users,train_positive_users)
-	dev_train = oversample_users + get_popped_list(negative_users,train_negative_users)
-	dev_test = get_popped_list(positive_users,test_positive_users) + get_popped_list(negative_users,test_negative_users)
+	train_neg = get_popped_list(negative_users,train_negative_users)
+
+	# dev - test = test_pos + test_neg 
+	test_pos = get_popped_list(positive_users,test_positive_users)  
+	test_neg = get_popped_list(negative_users,test_negative_users)
+
+	l = get_all_files(args['path'],'positive',oversample_users[0])
+	print len(l)
+	for bleh in l:
+		print bleh
 
 
 
