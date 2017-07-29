@@ -56,23 +56,31 @@ if __name__ == '__main__':
 	total_users = len(positive_users) + len(negative_users)
 	train_size = ( total_users * int(args['splitpercentage']) ) // 100 
 	test_size = total_users - train_size 
+	print 'total %d train %d test %d' %(total_users,train_size,test_size)
 
-	test_positive_users = (len(positive_users) * test_size ) // train_size
-	test_negative_users = (len(negative_users) * test_size ) // train_size
+	#ceiling instead of floor
+	test_positive_users = ((len(positive_users) * test_size ) // total_users) + 1 
+	#floor 
+	test_negative_users = (len(negative_users) * test_size ) // total_users 
 
 	train_positive_users = len(positive_users) - test_positive_users
 	train_negative_users = len(negative_users) - test_negative_users
 
-	print 'test'
-	print test_positive_users
-	print test_negative_users
-	print test_positive_users/test_negative_users
+	dev_train = get_popped_list(positive_users,train_positive_users) + get_popped_list(negative_users,train_negative_users)
+	dev_test = get_popped_list(positive_users,test_positive_users) + get_popped_list(negative_users,test_negative_users)
 
-	print 'train'
-	print train_positive_users
-	print train_negative_users
-	print train_positive_users/train_negative_users
+	print 'dev train'
+	print len(dev_train)
+	print dev_train
+	print 'dev test'
+	print len(dev_test)
+	print dev_test
+	print 'dev test + dev train %d'%(len(dev_train)+len(dev_test))
 
+
+	print 'should be empty'
+	print positive_users
+	print negative_users
 
 
 	
