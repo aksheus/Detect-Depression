@@ -49,6 +49,13 @@ if __name__ == '__main__':
 	train_size = ( total_users * int(args['splitpercentage']) ) // 100 
 	test_size = total_users - train_size 
 
+	train_positive_users = (train_size * len(positive_users) ) // len(negative_users)
+	train_negative_users = train_size - train_positive_users
+
+	test_positive_users = (test_size * len(positive_users)) // len(negative_users)
+	test_negative_users = test_size - test_positive_users
+	
+
 
 
 
