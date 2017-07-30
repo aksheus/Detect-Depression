@@ -17,6 +17,7 @@ join = lambda x,y: os.path.join(x,y)
 isdir = lambda x: os.path.isdir(x)
 isfile = lambda y: os.path.isfile(y)
 
+full_chunk = 'chunk1-2-3-4-5-6-7-8-9-10'
 
 def get_usernames(path,sign):
 	# get user names from <path>/<positive folder>/<chunk1-2>
@@ -39,11 +40,10 @@ def get_popped_list(anylist, how_much_pop):
 		counter+=1
 	return new
 
-def get_all_files(path,sign,username):
+def get_all_files(path,sign,username,chunks):
 
 	subdirs = [ join(path,subdir) for subdir in os.listdir(path) if isdir(join(path,subdir))]
 	required_dir = [ subdir for subdir in subdirs if sign in subdir ] [0]
-	chunks = ['chunk_'+str(x) for x in xrange(1,11) ]
 
 	try:
 		for chunk in chunks:
@@ -55,6 +55,7 @@ def get_all_files(path,sign,username):
 	except Exception:
 		print 'directory structure not proper (maybe)'
 		traceback.format_exc()
+
 
 if __name__ == '__main__':
 
@@ -91,7 +92,18 @@ if __name__ == '__main__':
 	test_pos = get_popped_list(positive_users,test_positive_users)  
 	test_neg = get_popped_list(negative_users,test_negative_users)
 
-	for userfile in get_all_files(args['path'],'positive',oversample_users[0]):
+	chunks = ['chunk_'+str(x) for x in xrange(1,11) ]
+
+	base = 'chunk1'
+	oversampling_chunks = [ 'chunk_1']
+	for i in xrange(2,int(args['fparam']) + 1):
+		base+='-'+str(i)
+		oversampling_chunks.append(base)
+	oversampling_chunks.append(full_chunk)
+
+	print oversampling_chunks 
+
+	for userfile in get_all_files(args['path'],'positive',oversample_users[0],oversampling_chunks):
 		print userfile
 
 
