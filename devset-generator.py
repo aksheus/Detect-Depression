@@ -4,6 +4,7 @@ from shutil import copy
 import os 
 import argparse
 import traceback
+import errno
 
 """
         Generate dev set in such a way that 
@@ -17,8 +18,12 @@ import traceback
 join = lambda x,y: os.path.join(x,y)
 isdir = lambda x: os.path.isdir(x)
 isfile = lambda y: os.path.isfile(y)
+exists = lambda z : os.path.exists(z)
 
 full_chunk = 'chunk1-2-3-4-5-6-7-8-9-10'
+
+# used to prevent race condition between makedirs and exists 
+directory_cache = set()
 
 def get_usernames(path,sign):
 	# get user names from <path>/<positive folder>/<chunk1-2>
@@ -62,10 +67,13 @@ def get_all_files(path,sign,username,chunks):
 def makeandcopy(filetocopy,out,neg=None):
 	# keep it dry loop helper 
 	dirtomake = filetocopy.split('/')[-2]
+
 	if neg is not None:
 		dirtomake+=neg
-	if not isdir(join(out_train,dirtomake)):
+
+	if join(out,dirtomake) not in directory_cache:
 		os.makedirs(join(out,dirtomake))
+		directory_cache.add(join(out,dirtomake))
 
 	copy(filetocopy,join(out,dirtomake))
 
@@ -154,6 +162,19 @@ if __name__ == '__main__':
 	for user in train_neg:
 		for filetocopy in get_all_files(args['path'],'negative',user,[full_chunk]):
 			makeandcopy(filetocopy,out_train,'neg')
+
+
+	for user in test_pos:
+		for filetocopy in get_all_files(args['path'],'positive',user,testchunks):
+			makeandcopy(filetocopy,out_test)
+
+	for user in test_neg:
+		for filetocopy in get_all_files(args['path'],'negative',user,testchunks):
+			makeandcopy(filetocopy,out_test)
+
+
+
+
 
 
 
