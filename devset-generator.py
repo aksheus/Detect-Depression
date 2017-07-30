@@ -1,5 +1,6 @@
 from __future__ import division 
-from random import shuffle 
+from random import shuffle
+from shutil import copy  
 import os 
 import argparse
 import traceback
@@ -56,6 +57,17 @@ def get_all_files(path,sign,username,chunks):
 		print 'directory structure not proper (maybe)'
 		traceback.format_exc()
 
+def makeandcopy(filetocopy,out,neg=None):
+
+	dirtomake = filetocopy.split('/')[-2]
+	if neg is not None:
+		dirtomake+=neg
+	if not isdir(join(out_train,dirtomake)):
+		os.makedirs(join(out,dirtomake))
+
+	copy(filetocopy,join(out,dirtomake))
+
+
 
 if __name__ == '__main__':
 
@@ -101,10 +113,34 @@ if __name__ == '__main__':
 		oversampling_chunks.append(base)
 	oversampling_chunks.append(full_chunk)
 
-	print oversampling_chunks 
+	base = 'chunk1'
+	testchunks = [base]
+	for i in xrange(2,11):
+		base+='-'+str(i)
+		testchunks.append(base)
 
-	for userfile in get_all_files(args['path'],'positive',oversample_users[0],oversampling_chunks):
-		print userfile
+	out_train = './dev-train'
+	out_test = './dev-test'
+
+	if not isdir(out_train):
+		os.makedirs(out_train)
+
+	if not isdir(out_test):
+		os.makedirs(out_test)
+
+	if args['oversampling'] == 'yes':
+
+		for filetocopy in get_all_files(args['path'],'positive',oversample_users[0],oversampling_chunks):
+			makeandcopy(filetocopy,out_train)
+
+		for filetocopy in get_all_files(args['path'],'negative',train_neg[0],[full_chunk]):
+			makeandcopy(filetocopy,out_train,'neg')
+		
+
+	elif args['oversampling'] == 'no':
+		pass 
+
+
 
 
 
