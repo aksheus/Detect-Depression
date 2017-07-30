@@ -34,6 +34,7 @@ def get_usernames(path,sign):
 	return [ u.split('.')[0] for u in os.listdir(target_folder) if isfile(join(target_folder,u)) ]
 
 def get_popped_list(anylist, how_much_pop):
+	# keep it dry loop helper 
 	new = []
 	counter = 0
 	while  counter < how_much_pop:
@@ -42,6 +43,7 @@ def get_popped_list(anylist, how_much_pop):
 	return new
 
 def get_all_files(path,sign,username,chunks):
+	# fetch files for user from their respective chunks 
 
 	subdirs = [ join(path,subdir) for subdir in os.listdir(path) if isdir(join(path,subdir))]
 	required_dir = [ subdir for subdir in subdirs if sign in subdir ] [0]
@@ -58,7 +60,7 @@ def get_all_files(path,sign,username,chunks):
 		traceback.format_exc()
 
 def makeandcopy(filetocopy,out,neg=None):
-
+	# keep it dry loop helper 
 	dirtomake = filetocopy.split('/')[-2]
 	if neg is not None:
 		dirtomake+=neg
@@ -71,6 +73,7 @@ def makeandcopy(filetocopy,out,neg=None):
 
 if __name__ == '__main__':
 
+	# get input 
 	parser = argparse.ArgumentParser(description='USAGE :   python deveset_generator.py --path ./train --splitpercentage 70 --oversampling yes --fparam 4 ')
 	parser.add_argument('-p','--path',help='path to train data folder',required=True)
 	parser.add_argument('-sp','--splitpercentage',help='size of the devset in percentage',required=True)
@@ -78,12 +81,15 @@ if __name__ == '__main__':
 	parser.add_argument('-f','--fparam',help='f parameter')
 	args= vars(parser.parse_args())
 
+	# list of all users 
 	positive_users =  get_usernames(args['path'],'positive')
 	negative_users =  get_usernames(args['path'],'negative')
 
+	# randomize em 
 	shuffle(positive_users)
 	shuffle(negative_users)
 
+	# math to split accurately 
 	total_users = len(positive_users) + len(negative_users)
 	train_size = ( total_users * int(args['splitpercentage']) ) // 100 
 	test_size = total_users - train_size 
@@ -104,21 +110,24 @@ if __name__ == '__main__':
 	test_pos = get_popped_list(positive_users,test_positive_users)  
 	test_neg = get_popped_list(negative_users,test_negative_users)
 
+	# chunks, oversampling_chunks , test_chunks arguments for getallfiles which fetches the files 
 	chunks = ['chunk_'+str(x) for x in xrange(1,11) ]
 
-	base = 'chunk1'
-	oversampling_chunks = [ 'chunk_1']
-	for i in xrange(2,int(args['fparam']) + 1):
-		base+='-'+str(i)
-		oversampling_chunks.append(base)
-	oversampling_chunks.append(full_chunk)
+	if args['fparam'] is not None:
+		base = 'chunk1'
+		oversampling_chunks = [ 'chunk_1']
+		for i in xrange(2,int(args['fparam']) + 1):
+			base+='-'+str(i)
+			oversampling_chunks.append(base)
+		oversampling_chunks.append(full_chunk)
 
 	base = 'chunk1'
-	testchunks = [base]
+	testchunks = ['chunk_1']
 	for i in xrange(2,11):
 		base+='-'+str(i)
 		testchunks.append(base)
 
+	# output directories 
 	out_train = './dev-train'
 	out_test = './dev-test'
 
@@ -128,17 +137,23 @@ if __name__ == '__main__':
 	if not isdir(out_test):
 		os.makedirs(out_test)
 
+	# output the right files 
 	if args['oversampling'] == 'yes':
 
-		for filetocopy in get_all_files(args['path'],'positive',oversample_users[0],oversampling_chunks):
-			makeandcopy(filetocopy,out_train)
-
-		for filetocopy in get_all_files(args['path'],'negative',train_neg[0],[full_chunk]):
-			makeandcopy(filetocopy,out_train,'neg')
-		
+		for user in oversample_users:
+			for filetocopy in get_all_files(args['path'],'positive',user,oversampling_chunks):
+				makeandcopy(filetocopy,out_train)
 
 	elif args['oversampling'] == 'no':
-		pass 
+
+		for user in oversample_users:
+			for filetocopy in get_all_files(args['path'],'positive',user,[full_chunk]):
+				makeandcopy(filetocopy,out_train)
+		 
+
+	for user in train_neg:
+		for filetocopy in get_all_files(args['path'],'negative',user,[full_chunk]):
+			makeandcopy(filetocopy,out_train,'neg')
 
 
 
