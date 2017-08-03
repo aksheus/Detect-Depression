@@ -72,8 +72,8 @@ if __name__=='__main__':
 
 				else:
 					if len(pieces) > 1 and pieces[1] == 'categories':
-						pieces[-1]=replace_categories
-						out.write(' '.join(s for s in pieces))
+						out_this = [pieces[0],pieces[1],replace_categories]
+						out.write(' '.join(s for s in out_this))
 						out.write('\n')
 					else:
 						out.write(line)
