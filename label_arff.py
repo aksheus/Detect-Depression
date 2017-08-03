@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
     USAGE :  \> python label_arff.py truth_file arff_file output_file
 """
@@ -5,7 +6,8 @@ import sys
 import os
 
 replace_positive = '1'
-replace_negative = '0' 
+replace_negative = '0'
+replace_categories = '{0,1}' 
 
 def get_truth_sets(content):
 
@@ -69,7 +71,12 @@ if __name__=='__main__':
 					out.write('\n')
 
 				else:
-					out.write(line)
+					if len(pieces) > 1 and pieces[1] == 'categories':
+						pieces[-1]=replace_categories
+						out.write(' '.join(s for s in pieces))
+						out.write('\n')
+					else:
+						out.write(line)
 
 				if pieces[0] == '@data':
 					data_flag = True
