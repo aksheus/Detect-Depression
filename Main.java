@@ -34,6 +34,20 @@ public class Main{
 
 		double Threshold = Double.parseDouble(System.console().readLine());
 
+		System.out.println("do you want to run exhaustive (yes) or chunk by chunk (no) ?");
+
+		String IsExhaustive = System.console().readLine();
+
+		// nothing happens if it is zero 
+		int UptoThisChunk=0;
+
+		if(IsExhaustive.equals("no")){
+
+			System.out.println("at which chunk you want to give decision? Enter a number between 1 and 10");
+
+			UptoThisChunk = Integer.parseInt(System.console().readLine());
+		}
+
 		ArffReader Reader;
 
 		if(CheckPath1.exists() && !CheckPath1.isDirectory()){
@@ -54,15 +68,19 @@ public class Main{
 
 					Builder.PrintClassifier();
 
-					//Builder.EvaluateAgainstTestSet(Builder.DevTestSet);
 
 					ChunkManager Manager = new ChunkManager(args[1]);
 
-					//Builder.EvaluateAgainstTestSet(Reader.GetAllTestData(args[1]+"/test_chunk1-2-3.arff"));
+					if(IsExhaustive.equals("yes")){
+					
+						Builder.RunEarlyRiskClassificationExhaustive(Manager,10);
 
-					Builder.RunEarlyRiskClassificationExhaustive(Manager,10);
+					}
+					else {
 
-		//			Builder.EvaluateAgainstTestSet(Reader.GetAllTestData()); 
+						Builder.RunEarlyRiskClassificationChunkByChunk(Manager,10,UptoThisChunk);
+					}
+
 					
                 }
                 catch(IOException ioe){

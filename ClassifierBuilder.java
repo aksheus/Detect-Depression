@@ -236,17 +236,8 @@ public class ClassifierBuilder{
 	}
 
 	
-	public void RunEarlyRiskClassificationChunkByChunk(ChunkManager manager,int howManyChunks) throws Exception{
+	public void RunEarlyRiskClassificationChunkByChunk(ChunkManager manager,int howManyChunks,int uptoThisChunk) throws Exception{
 
-	/*	get chunks iteratively
-
-		calculate delay ?? delay is for each subject ? or whatever it is for now 
-
-		for each chunk iterate over the instances
-		
-		classify each instance with the help of policy
-
-		it to the file in required format using CsvWriter */
 
 		for(int OuterIndex=1; OuterIndex<=howManyChunks; OuterIndex++){
 
@@ -257,27 +248,45 @@ public class ClassifierBuilder{
 			Instances TestData = manager.GetDataFromCurrentChunk();
 
 			// Get console output for no policy #weka metrics 
-			//EvaluateAgainstTestSet(TestData,OuterIndex);
+			EvaluateAgainstTestSet(TestData,OuterIndex);
 
-			CsvWriter Writer = new CsvWriter("./output_for_chunk"+Integer.toString(OuterIndex)+".txt");
+			CsvWriter Writer = new CsvWriter("./ritual_"+Integer.toString(OuterIndex)+".txt");
 
 			for(int InnerIndex =0; InnerIndex < TestData.numInstances(); InnerIndex++ ){
 
 				double [] Predictions = MyClassifier.distributionForInstance(TestData.get(InnerIndex));
 
-				if(Policy(Predictions[1])){
+				if (OuterIndex == uptoThisChunk){
 
-					Writer.AppendToOutput(SubjectNames.get(InnerIndex),1,CalculateDelay());
+				Writer.AppendToOutput(SubjectNames.get(InnerIndex),MyClassifier.classifyInstance(TestData.get(InnerIndex)));
+					boolean Written = false;
+
+					if(Predictions[1] > Predictions[0]){
+
+						if(Policy(Predictions[1])){
+
+							Writer.AppendToOutput(SubjectNames.get(InnerIndex),1);
+							Written = true;
+						}
+					}else if (Predictions[0] > Predictions[1]) {
+
+						if(Policy(Predictions[0])){
+
+							Writer.AppendToOutput(SubjectNames.get(InnerIndex),2);
+							Written = true;
+					   }
+					}
+					if(!Written)
+					{ 
+							Writer.AppendToOutput(SubjectNames.get(InnerIndex),0);
+					} 
 				}
-				else{
-
-					Writer.AppendToOutput(SubjectNames.get(InnerIndex),0,CalculateDelay());
-				}
-
-
+				else {
+					Writer.AppendToOutput(SubjectNames.get(InnerIndex),0);
+				} 	
 			}
-
-		}
+		}	
+	
 
 	}
 
@@ -337,34 +346,28 @@ public class ClassifierBuilder{
 
 				double [] Predictions = MyClassifier.distributionForInstance(TestData.get(InnerIndex));
 
-				boolean isFirstIndexGreater = true; // negative 
 
-				if(Predictions[1] > Predictions[0]){
-					isFirstIndexGreater= false;
-				}
+					boolean Written = false;
 
-				boolean Written = false;
+					if(Predictions[1] > Predictions[0]){
 
-				if(isFirstIndexGreater){
-					// probbaly not depressed say it !!
-					if(Policy(Predictions[0])){
+						if(Policy(Predictions[1])){
 
-						Writer.AppendToOutput(SubjectNames.get(InnerIndex),2);
-						Written = true;
-				    }
-				}else {
+							Writer.AppendToOutput(SubjectNames.get(InnerIndex),1);
+							Written = true;
+						}
+					}else if (Predictions[0] > Predictions[1]) {
 
-					if(Policy(Predictions[1])){
+						if(Policy(Predictions[0])){
 
-						Writer.AppendToOutput(SubjectNames.get(InnerIndex),1);
-						Written = true;
+							Writer.AppendToOutput(SubjectNames.get(InnerIndex),2);
+							Written = true;
+					   }
 					}
-				}
-				if(!Written)
-				{ 
-					// dont't say they are not depressed yet !!
-					Writer.AppendToOutput(SubjectNames.get(InnerIndex),0); 
-				} 
+					if(!Written)
+					{ 
+							Writer.AppendToOutput(SubjectNames.get(InnerIndex),0);
+					} 
 
 
 			}
@@ -373,7 +376,10 @@ public class ClassifierBuilder{
 
 	}
 	
-/*	public void RunEarlyRiskClassificationExhaustiveWithCache(ChunkManager manager,int howManyChunks) throws Exception{
+/*
+	Experimental do not use 
+
+	public void RunEarlyRiskClassificationExhaustiveWithCache(ChunkManager manager,int howManyChunks) throws Exception{
 
 		HashMap <String,Integer> Cache = new HashMap <String,Integer> ();
 
